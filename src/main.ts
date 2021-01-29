@@ -15,6 +15,13 @@ export function main(ctx: CanvasRenderingContext2D) {
     function loop() {
         fpsManager.update();
         player.update();
+        {
+            const i = field.items.findIndex(item => item.x === player.cx && item.y === player.cy);
+            if (~i) {
+                field.items.splice(i, 1);
+            }
+        }
+
         const rp = player.realPos();
 
         const drawText = (text: string, y: number, color: boolean) => {
