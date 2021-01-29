@@ -23,6 +23,7 @@ export class Player {
     moveCounter: number;
     moveCounterMax: number;
     field: Field;
+    moveCoolTime: number;
 
     constructor(field: Field) {
         this.cx = 0;
@@ -31,14 +32,25 @@ export class Player {
         this.moveCounter = 0;
         this.moveCounterMax = 3;
         this.field = field;
+        this.moveCoolTime = 0;
     }
 
     update() {
         const keys = getKeys();
         if (this.moveCounter === 0) {
-            this.moveCounterMax = keys.ShiftLeft ? 1 : 3;
+            if (this.moveCoolTime > 0) {
+                this.moveCoolTime -= 1;
+                return;
+            }
+            const fast = keys.ShiftLeft;
+            this.moveCounterMax = fast ? 1 : 3;
             const ok = (dx: number, dy: number) => {
-                if (this.field.getCell(this.cx + dx, this.cy + dy) >= 2) {
+                if (!this.blocked(this.cx + dx, this.cy + dy)) {
+                    if (fast && !this.blocked(this.cx + dx * 2, this.cy + dy * 2) &&
+                        (this.blocked(this.cx + dy, this.cy + dx) && !this.blocked(this.cx + dx + dy, this.cy + dy + dx)) ||
+                        (this.blocked(this.cx - dy, this.cy - dx) && !this.blocked(this.cx + dx - dy, this.cy + dy - dx))) {
+                            this.moveCoolTime = 5;
+                    }
                     this.cx += dx;
                     this.cy += dy;
                     this.moveCounter = this.moveCounterMax;
@@ -64,6 +76,10 @@ export class Player {
         } else {
             this.moveCounter -= 1;
         }
+    }
+
+    blocked(x: number, y: number): boolean {
+        return this.field.getCell(x, y) < 2;
     }
 
     realPos(): [number, number] {
