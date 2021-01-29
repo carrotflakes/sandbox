@@ -5,7 +5,7 @@ const canvasEl = document.getElementById('canvas') as HTMLCanvasElement;
 const ctx = canvasEl.getContext('2d') as CanvasRenderingContext2D;
 
 function g() {
-    const chunks = new Chunks();
+    const chunks = new Chunks(0);
     const s = (600 / size) | 0;
 
     let cx = 0, cy = 0;

@@ -1,81 +1,16 @@
-import { setTextRange } from 'typescript';
 import {size, Chunks, Chunk} from './core';
 import {getKeys} from './keyboard';
 import { FpsManager } from './fpsManager';
 import { Field } from './field';
-
-type Dir = 'up' | 'down' | 'left' | 'right';
-
-class Player {
-    cx: number;
-    cy: number;
-    dir: Dir;
-    moveCounter: number;
-    moveCounterMax: number;
-
-    constructor() {
-        this.cx = 0;
-        this.cy = 0;
-        this.dir = 'down';
-        this.moveCounter = 0;
-        this.moveCounterMax = 3;
-    }
-
-    update() {
-        const keys = getKeys();
-        if (this.moveCounter === 0) {
-            this.moveCounterMax = keys.Shift ? 1 : 3;
-            if (keys.ArrowUp) {
-                this.dir = 'up';
-                this.cy -= 1;
-                this.moveCounter = this.moveCounterMax;
-            } else if (keys.ArrowDown) {
-                this.dir = 'down';
-                this.cy += 1;
-                this.moveCounter = this.moveCounterMax;
-            } else if (keys.ArrowLeft) {
-                this.dir = 'left';
-                this.cx -= 1;
-                this.moveCounter = this.moveCounterMax;
-            } else if (keys.ArrowRight) {
-                this.dir = 'right';
-                this.cx += 1;
-                this.moveCounter = this.moveCounterMax;
-            }
-        } else {
-            this.moveCounter -= 1;
-        }
-    }
-
-    realPos(): [number, number] {
-        switch (this.dir) {
-            case 'up':
-                return [this.cx, this.cy + this.moveCounter / this.moveCounterMax];
-            case 'down':
-                return [this.cx, this.cy - this.moveCounter / this.moveCounterMax];
-            case 'left':
-                return [this.cx + this.moveCounter / this.moveCounterMax, this.cy];
-            case 'right':
-                return [this.cx - this.moveCounter / this.moveCounterMax, this.cy];
-        }
-    }
-
-    draw(ctx: CanvasRenderingContext2D) {
-        ctx.translate(0.5, 0.5);
-        ctx.rotate({up: 3, down: 1, left: 2, right: 0}[this.dir] * Math.PI / 2);
-        ctx.fillStyle = '#333';
-        ctx.beginPath();
-        ctx.arc(0, 0, 0.3, Math.PI * 0.2, Math.PI * 1.8);
-        ctx.lineCap = 'round';
-        ctx.lineWidth = 0.2;
-        ctx.stroke();
-    }
-}
+import { Player } from './entities/player';
 
 export function main(ctx: CanvasRenderingContext2D) {
     const fpsManager = new FpsManager(30);
     const field = new Field(0);
-    const player = new Player();
+    const player = new Player(field);
+    const [fpx, fpy] = firstPos(field);
+    player.cx = fpx;
+    player.cy = fpy;
 
     const s = 600 / 15;
 
@@ -134,12 +69,6 @@ export function main(ctx: CanvasRenderingContext2D) {
         }
         ctx.restore();
 
-        // ctx.fillStyle = '#333';
-        // ctx.beginPath();
-        // ctx.arc(s * 7 + s / 2, s * 7 + s / 2, s * 0.3, 0, Math.PI * 2);
-        // ctx.closePath();
-        // ctx.lineWidth = s * 0.2;
-        // ctx.stroke();
         ctx.save();
         ctx.scale(s, s);
         ctx.translate(7, 7);
@@ -158,4 +87,15 @@ export function main(ctx: CanvasRenderingContext2D) {
         fpsManager.requestAnimationFrame(loop);
     }
     loop();
+}
+
+function firstPos(field: Field): [number, number] {
+    for (let i = 0; i < size; ++i) {
+        for (let j = 0; j < i + 1; ++j) {
+            if (field.getCell(j, i - j) === 2) {
+                return [j, i - j];
+            }
+        }
+    }
+    throw new Error('firstPos not found!!!!');
 }
