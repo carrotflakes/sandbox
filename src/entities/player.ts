@@ -35,6 +35,24 @@ export class Player {
         this.moveCoolTime = 0;
     }
 
+    move(fast: boolean, dig: boolean) {
+        const [dx, dy] = dir2dpos(this.dir);
+        if (dig && this.blocked(this.cx + dx, this.cy + dy)) {
+            this.field.dig(this.cx + dx, this.cy + dy);
+        }
+        if (!this.blocked(this.cx + dx, this.cy + dy)) {
+            if (fast && !this.blocked(this.cx + dx * 2, this.cy + dy * 2) &&
+                (this.blocked(this.cx + dy, this.cy + dx) && !this.blocked(this.cx + dx + dy, this.cy + dy + dx)) ||
+                (this.blocked(this.cx - dy, this.cy - dx) && !this.blocked(this.cx + dx - dy, this.cy + dy - dx))) {
+                    this.moveCoolTime = 5;
+            }
+            this.cx += dx;
+            this.cy += dy;
+            this.moveCounterMax = fast ? 1 : 3;
+            this.moveCounter = this.moveCounterMax;
+        }
+    }
+
     update() {
         const keys = getKeys();
         if (this.moveCounter === 0) {
@@ -42,8 +60,7 @@ export class Player {
                 this.moveCoolTime -= 1;
                 return;
             }
-            const fast = keys.ShiftLeft;
-            this.moveCounterMax = fast ? 1 : 3;
+            const fast = !!keys.ShiftLeft;
             const ok = (dx: number, dy: number) => {
                 if (!this.blocked(this.cx + dx, this.cy + dy)) {
                     if (fast && !this.blocked(this.cx + dx * 2, this.cy + dy * 2) &&
@@ -62,16 +79,16 @@ export class Player {
             };
             if (keys.ArrowUp) {
                 this.dir = 'up';
-                ok(0, -1);
+                this.move(fast, !!keys.KeyZ);
             } else if (keys.ArrowDown) {
                 this.dir = 'down';
-                ok(0, 1);
+                this.move(fast, !!keys.KeyZ);
             } else if (keys.ArrowLeft) {
                 this.dir = 'left';
-                ok(-1, 0);
+                this.move(fast, !!keys.KeyZ);
             } else if (keys.ArrowRight) {
                 this.dir = 'right';
-                ok(1, 0);
+                this.move(fast, !!keys.KeyZ);
             }
         } else {
             this.moveCounter -= 1;

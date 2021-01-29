@@ -3,18 +3,34 @@ import {getKeys} from './keyboard';
 import { FpsManager } from './fpsManager';
 import { Field } from './field';
 import { Player } from './entities/player';
+import { Navigator } from './entities/navigator';
+import { TapIndicator } from './entities/tapIndicator';
 
 export function main(ctx: CanvasRenderingContext2D) {
     const fpsManager = new FpsManager(30);
     const field = new Field(0);
     const player = new Player(field);
+    const navigator = new Navigator(field, player);
+    const tapIndicator = new TapIndicator();
     const [fpx, fpy] = firstPos(field);
     player.cx = fpx;
     player.cy = fpy;
+    let mouse: {x: number, y: number, timestamp: number} | null = null;
 
     function loop() {
+        if (mouse) {
+            tapIndicator.taped(mouse);
+
+            const s = 600 / 15;
+            const rp = player.realPos();
+            navigator.setDestination([Math.floor(mouse.x / s + rp[0]) - 7, Math.floor(mouse.y / s + rp[1]) - 7]);
+
+            mouse = null;
+        }
+
         fpsManager.update();
         player.update();
+        navigator.update();
         {
             const i = field.items.findIndex(item => item.x === player.cx && item.y === player.cy);
             if (~i) {
@@ -43,6 +59,7 @@ export function main(ctx: CanvasRenderingContext2D) {
         ctx.closePath();
         ctx.clip();
         drawField2(ctx, field, [7-rp[0], 7-rp[1]]);
+        navigator.draw(ctx, [7-rp[0], 7-rp[1]]);
         ctx.restore();
 
         ctx.save();
@@ -51,6 +68,8 @@ export function main(ctx: CanvasRenderingContext2D) {
         ctx.translate(7, 7);
         player.draw(ctx);
         ctx.restore();
+
+        tapIndicator.draw(ctx);
 
         const keys = getKeys();
         drawText('↑', 0, !!keys.ArrowUp);
@@ -65,6 +84,12 @@ export function main(ctx: CanvasRenderingContext2D) {
         fpsManager.requestAnimationFrame(loop);
     }
     loop();
+
+    ctx.canvas.addEventListener('mousedown', (e) => {
+        const bb = ctx.canvas.getBoundingClientRect();
+        mouse = {x: e.clientX - bb.left, y: e.clientY - bb.top, timestamp: Date.now()};
+        navigator.setDestination([0, 0]);
+    });
 }
 
 function firstPos(field: Field): [number, number] {

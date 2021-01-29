@@ -518,6 +518,7 @@ export class Chunks {
         const chunk = this.ensureChunk(x, y);
         if (!chunk.completed) {
             chunk.completed = true;
+            console.log('create chunk');
 
             this.generatePaths(x, y);
             this.generatePaths(x-1, y-1);
