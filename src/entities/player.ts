@@ -82,7 +82,7 @@ export class Player {
     draw(ctx: CanvasRenderingContext2D) {
         ctx.translate(0.5, 0.5);
         ctx.rotate({up: 3, down: 1, left: 2, right: 0}[this.dir] * Math.PI / 2);
-        ctx.fillStyle = '#222';
+        ctx.strokeStyle = '#222';
         ctx.beginPath();
         ctx.arc(0, 0, 0.3, Math.PI * 0.2, Math.PI * 1.8);
         ctx.lineCap = 'round';

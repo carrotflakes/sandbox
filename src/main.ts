@@ -129,4 +129,19 @@ function drawField2(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [numb
             ctx.fillRect((ox + x) * s, (oy + y) * s, s + 1, s + 1);
         }
     }
+    for (const item of field.items) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(200, 180, 20, 1)';
+        ctx.strokeStyle = '#ddd';
+        ctx.scale(s, s);
+        ctx.translate(cx + item.x, cy + item.y);
+        ctx.translate(0.5, 0.5);
+        ctx.beginPath();
+        ctx.arc(0, 0, 0.3, Math.PI * 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.lineWidth = 0.04;
+        // ctx.stroke();
+        ctx.restore();
+    }
 }
