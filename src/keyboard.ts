@@ -1,16 +1,16 @@
 const keyPressed: {[key:string]: number} = {
 };
 
-const keyNames = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'x', 'z', 'Shift'];
+const Codes = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyX', 'KeyZ', 'ShiftLeft'];
 
 window.addEventListener('keydown', (e) => {
-    if (keyNames.includes(e.key)) {
-        keyPressed[e.key] = 1;
+    if (Codes.includes(e.code)) {
+        keyPressed[e.code] = 1;
     }
 });
 window.addEventListener('keyup', (e) => {
-    if (keyNames.includes(e.key)) {
-        keyPressed[e.key] = 0;
+    if (Codes.includes(e.code)) {
+        keyPressed[e.code] = 0;
     }
 });
 

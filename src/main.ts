@@ -35,7 +35,7 @@ export function main(ctx: CanvasRenderingContext2D) {
         ctx.lineTo(0, 600);
         ctx.closePath();
         ctx.clip();
-        drawField(ctx, field, [7-rp[0], 7-rp[1]], 100);
+        drawField2(ctx, field, [7-rp[0], 7-rp[1]]);
         ctx.restore();
 
         ctx.save();
@@ -50,9 +50,10 @@ export function main(ctx: CanvasRenderingContext2D) {
         drawText('↓', 1, !!keys.ArrowDown);
         drawText('←', 2, !!keys.ArrowLeft);
         drawText('→', 3, !!keys.ArrowRight);
-        drawText('Shift', 4, !!keys.Shift);
-        drawText('z', 5, !!keys.z);
+        drawText('Shift', 4, !!keys.ShiftLeft);
+        drawText('z', 5, !!keys.KeyZ);
         drawText(`fps: ${(fpsManager.fps() + '00000').substr(0, 6)}`, 7, false);
+        drawText(`${player.cx}, ${player.cy}`, 8, false);
 
         fpsManager.requestAnimationFrame(loop);
     }
@@ -96,6 +97,36 @@ function drawField(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [numbe
                     break;
             }
             ctx.fillRect((ox + x) * s, (oy + y) * s, s-1, s-1);
+        }
+    }
+}
+
+function drawField2(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [number, number], cells: number = 15) {
+    const s = 600 / cells;
+    const dx = Math.floor(-cx);
+    const dy = Math.floor(-cy);
+    const ox = cx + dx, oy = cy + dy;
+    for (let y = 0; y < cells + 1; ++y) {
+        for (let x = 0; x < cells + 1; ++x) {
+            const c = field.getCell(dx + x, dy + y);
+            switch (c) {
+                case 0:
+                    ctx.fillStyle = 'rgba(220, 220, 220, 1)';
+                    break;
+                case 1:
+                    ctx.fillStyle = 'rgba(100, 100, 100, 1)';
+                    break;
+                case 2:
+                    ctx.fillStyle = 'rgba(200, 50, 50, 1)';
+                    break;
+                case 3:
+                    ctx.fillStyle = 'rgba(100, 100, 200, 1)';
+                    break;
+                case -1:
+                    ctx.fillStyle = 'rgba(190, 190, 190, 1)';
+                    break;
+            }
+            ctx.fillRect((ox + x) * s, (oy + y) * s, s + 1, s + 1);
         }
     }
 }

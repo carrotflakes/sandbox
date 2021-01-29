@@ -3,6 +3,19 @@ import { Field } from '../field';
 
 type Dir = 'up' | 'down' | 'left' | 'right';
 
+function dir2dpos(dir: Dir): [number, number] {
+    switch (dir) {
+        case 'up':
+            return [0, -1];
+        case 'down':
+            return [0, 1];
+        case 'left':
+            return [-1, 0];
+        case 'right':
+            return [1, 0];
+    }
+}
+
 export class Player {
     cx: number;
     cy: number;
@@ -23,12 +36,16 @@ export class Player {
     update() {
         const keys = getKeys();
         if (this.moveCounter === 0) {
-            this.moveCounterMax = keys.Shift ? 1 : 3;
+            this.moveCounterMax = keys.ShiftLeft ? 1 : 3;
             const ok = (dx: number, dy: number) => {
                 if (this.field.getCell(this.cx + dx, this.cy + dy) >= 2) {
                     this.cx += dx;
                     this.cy += dy;
                     this.moveCounter = this.moveCounterMax;
+                } else {
+                    if (keys.KeyZ) {
+                        this.field.dig(this.cx + dx, this.cy + dy);
+                    }
                 }
             };
             if (keys.ArrowUp) {

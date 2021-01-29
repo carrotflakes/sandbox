@@ -255,6 +255,10 @@ export class Chunk {
         return this.field[(y + 1) * (size + 2) + x + 1];
     }
 
+    setCell(x: number, y: number, cell: number) {
+        this.field[(y + 1) * (size + 2) + x + 1] = cell;
+    }
+
     generateRooms() {
         this.rooms = [];
         const mt = new MersenneTwister(this.seed);
@@ -491,9 +495,30 @@ export class Chunks {
         }
     }
 
+    connectAll(chunk: Chunk) {
+        const connectedRooms: Room[][] = [];
+        for (const room of chunk.rooms) {
+            if (!connectedRooms.find(cr => cr.includes(room))) {
+                const opens: Room[] = [room];
+                const closed: Room[] = [];
+                while (opens.length) {
+                    const open = opens.pop() as Room;
+                    if (closed.includes(open)) continue;
+                    closed.push(open);
+                    opens.push(...open.pathTo);
+                }
+                connectedRooms.push(closed);
+            }
+        }
+        // console.log(connectedRooms);
+        // TODO...
+    }
+
     getChunk(x: number, y: number): Chunk {
         const chunk = this.ensureChunk(x, y);
         if (!chunk.completed) {
+            chunk.completed = true;
+
             this.generatePaths(x, y);
             this.generatePaths(x-1, y-1);
             this.generatePaths(x, y-1);
@@ -503,7 +528,7 @@ export class Chunks {
             this.generatePaths(x-1, y+1);
             this.generatePaths(x, y+1);
             this.generatePaths(x+1, y+1);
-            chunk.completed = true;
+            this.connectAll(chunk);
         }
         return chunk;
     }
