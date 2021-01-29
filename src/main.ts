@@ -12,8 +12,6 @@ export function main(ctx: CanvasRenderingContext2D) {
     player.cx = fpx;
     player.cy = fpy;
 
-    const s = 600 / 15;
-
     function loop() {
         fpsManager.update();
         player.update();
@@ -37,39 +35,11 @@ export function main(ctx: CanvasRenderingContext2D) {
         ctx.lineTo(0, 600);
         ctx.closePath();
         ctx.clip();
-        {
-            let cells = 15;
-            const cx = 7 - rp[0], cy = 7 - rp[1];
-            const dx = Math.floor(-cx);
-            const dy = Math.floor(-cy);
-            const ox = cx + dx, oy = cy + dy;
-            for (let y = 0; y < cells + 1; ++y) {
-                for (let x = 0; x < cells + 1; ++x) {
-                    const c = field.getCell(dx + x, dy + y);
-                    switch (c) {
-                        case 0:
-                            ctx.fillStyle = 'rgba(220, 220, 220, 1)';
-                            break;
-                        case 1:
-                            ctx.fillStyle = 'rgba(100, 100, 100, 1)';
-                            break;
-                        case 2:
-                            ctx.fillStyle = 'rgba(200, 50, 50, 1)';
-                            break;
-                        case 3:
-                            ctx.fillStyle = 'rgba(100, 100, 200, 1)';
-                            break;
-                        case -1:
-                            ctx.fillStyle = 'rgba(190, 190, 190, 1)';
-                            break;
-                    }
-                    ctx.fillRect((ox + x) * s, (oy + y) * s, s-1, s-1);
-                }
-            }
-        }
+        drawField(ctx, field, [7-rp[0], 7-rp[1]], 100);
         ctx.restore();
 
         ctx.save();
+        const s = 600 / 15;
         ctx.scale(s, s);
         ctx.translate(7, 7);
         player.draw(ctx);
@@ -98,4 +68,34 @@ function firstPos(field: Field): [number, number] {
         }
     }
     throw new Error('firstPos not found!!!!');
+}
+
+function drawField(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [number, number], cells: number = 15) {
+    const s = 600 / cells;
+    const dx = Math.floor(-cx);
+    const dy = Math.floor(-cy);
+    const ox = cx + dx, oy = cy + dy;
+    for (let y = 0; y < cells + 1; ++y) {
+        for (let x = 0; x < cells + 1; ++x) {
+            const c = field.getCell(dx + x, dy + y);
+            switch (c) {
+                case 0:
+                    ctx.fillStyle = 'rgba(220, 220, 220, 1)';
+                    break;
+                case 1:
+                    ctx.fillStyle = 'rgba(100, 100, 100, 1)';
+                    break;
+                case 2:
+                    ctx.fillStyle = 'rgba(200, 50, 50, 1)';
+                    break;
+                case 3:
+                    ctx.fillStyle = 'rgba(100, 100, 200, 1)';
+                    break;
+                case -1:
+                    ctx.fillStyle = 'rgba(190, 190, 190, 1)';
+                    break;
+            }
+            ctx.fillRect((ox + x) * s, (oy + y) * s, s-1, s-1);
+        }
+    }
 }

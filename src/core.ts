@@ -6,12 +6,14 @@ class Room {
     y: number;
     w: number;
     h: number;
+    pathTo: Room[];
 
     constructor(x: number, y: number, w: number, h: number) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
+        this.pathTo = [];
     }
 
     get right(): number {
@@ -348,6 +350,10 @@ export class Chunk {
             fieldWrap(this.field);
         }
     }
+
+    getRoomByPos(pos: Pos): Room | null {
+        return this.rooms.find(room => room.hitPos(pos)) || null
+    }
 }
 
 export class Chunks {
@@ -403,9 +409,8 @@ export class Chunks {
             const cy = Math.floor(pos[1] / size);
             chunks[(cy + 1) * 3 + cx + 1].field[pos2idx([pos[0] - cx * size, pos[1] - cy * size])] = cell;
         };
-
-        for (const i in chunk.rooms) {
-            const re1 = roomEntrance(mt, chunk.rooms[i]);
+        const makePath = (room: Room) => {
+            const re1 = roomEntrance(mt, room);
             let p = move(re1[1], re1[2], 0);
             let d = re1[2];
             const path: Pos[] = [re1[0], p];
@@ -454,8 +459,20 @@ export class Chunks {
                 }
             }
             if (!connected) {
-                continue;
+                return;
             }
+
+            let room2: Room | null = null;
+            const pos: Pos = [(path[path.length - 1][0] + size* 2 - 1) % size + 1, (path[path.length - 1][1] + size * 2 - 1) % size + 1];
+            // console.log(path[path.length - 1], pos);
+            for (const chunk of chunks) {
+                room2 = chunk.getRoomByPos(pos);
+                if (room2) break;
+            }
+            if (!room2)
+                throw new Error('room not found');
+            room.pathTo.push(room2);
+            room2.pathTo.push(room);
 
             for (let i = 0; i < path.length - 1; ++i) {
                 const pos1 = path[i];
@@ -467,6 +484,10 @@ export class Chunks {
             for (const c of chunks) {
                 fieldWrap(c.field);
             }
+        }
+
+        for (const i in chunk.rooms) {
+            makePath(chunk.rooms[i]);
         }
     }
 
