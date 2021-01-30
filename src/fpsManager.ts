@@ -20,9 +20,8 @@ export class FpsManager {
 
     wait() {
         const len = this.history.length;
-        const next = this.history[0] + 1000 * len / this.idealFps;
+        const next = (this.history[0] + this.history[len - 1] + 1000 * (len + 1) / this.idealFps) / 2;
         return next - Date.now();
-
     }
 
     requestAnimationFrame(f: () => void) {
