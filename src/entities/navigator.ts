@@ -53,6 +53,7 @@ export class Navigator {
             ctx.save();
             ctx.globalAlpha = 0.95 - Math.abs(Date.now() % 2000 / 1000 - 1) ** 2 * 0.8
             ctx.fillStyle = '#FFF';
+            ctx.fillStyle = '#999';
             const [x, y] = this.destination;
             ctx.fillRect((x + cx) * s, (y + cy) * s, s, s);
             ctx.restore();

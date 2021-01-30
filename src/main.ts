@@ -59,7 +59,7 @@ export function main(ctx: CanvasRenderingContext2D) {
         ctx.lineTo(0, 600);
         ctx.closePath();
         ctx.clip();
-        drawField2(ctx, field, [7-rp[0], 7-rp[1]]);
+        drawField3(ctx, field, [7-rp[0], 7-rp[1]]);
         navigator.draw(ctx, [7-rp[0], 7-rp[1]]);
         ctx.restore();
 
@@ -161,6 +161,70 @@ function drawField2(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [numb
                     break;
             }
             ctx.fillRect((ox + x) * s, (oy + y) * s, s + 1, s + 1);
+        }
+    }
+    for (const item of field.items) {
+        ctx.save();
+        ctx.fillStyle = 'rgba(200, 180, 20, 1)';
+        ctx.strokeStyle = '#ddd';
+        ctx.scale(s, s);
+        ctx.translate(cx + item.x, cy + item.y);
+        ctx.translate(0.5, 0.5);
+        ctx.beginPath();
+        ctx.arc(0, 0, 0.3, Math.PI * 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+        ctx.lineWidth = 0.04;
+        // ctx.stroke();
+        ctx.restore();
+    }
+}
+
+function drawField3(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [number, number], cells: number = 15) {
+    const s = 600 / cells;
+    const dx = Math.floor(-cx);
+    const dy = Math.floor(-cy);
+    const ox = cx + dx, oy = cy + dy;
+    const f = (x: number , y: number) => field.getCell(x + dx, y + dy) < 1;
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 3;
+    for (let y = 0; y < cells + 1; ++y) {
+        for (let x = 0; x < cells + 1; ++x) {
+            const d = (+f(x, y) << 3) | (+f(x+1, y) << 2) | (+f(x+1, y+1) << 1) | (+f(x, y+1) << 0);
+            for (let i = 0; i < 4; ++i) {
+                let line: [number, number, number, number] | null = null;
+                ctx.beginPath();
+                const t = [0, 1, 0, -1];
+                switch (((d << i) | (d >> (4-i))) & 0b1111) {
+                    case 0b1000:
+                    case 0b1010:
+                        line = [0.2, 0.5, 0.5, 0.2];
+                        ctx.moveTo((ox + x + 1 - line[0] * t[(i+1) % 4] + line[1] * t[i % 4]) * s, (oy + y + 1 - line[0] * t[i % 4] - line[1] * t[(i+1) % 4]) * s);
+                        ctx.arc((ox + x + 1 - 0.4 * t[(i+1) % 4] + 0.4 * t[i % 4]) * s, (oy + y + 1 - 0.4 * t[i % 4] - 0.4 * t[(i+1) % 4]) * s, 0.2 * s, (i + 0) * 0.5 * Math.PI, (i + 1) * 0.5 * Math.PI);
+                        ctx.lineTo((ox + x + 1 - line[2] * t[(i+1) % 4] + line[3] * t[i % 4]) * s, (oy + y + 1 - line[2] * t[i % 4] - line[3] * t[(i+1) % 4]) * s);
+                        // ctx.arc((ox + x + 1 - 0.5 * t[(i+1) % 4] + 0.5 * t[i % 4]) * s, (oy + y + 1 - 0.5 * t[i % 4] - 0.5 * t[(i+1) % 4]) * s, 0.3 * s, (i + 0) * 0.5 * Math.PI, (i + 1) * 0.5 * Math.PI);
+                        break;
+                    case 0b1100:
+                    case 0b1110:
+                        line = [0.5, 0.2, 0.0, 0.2];
+                        ctx.moveTo((ox + x + 1 - line[0] * t[(i+1) % 4] + line[1] * t[i % 4]) * s, (oy + y + 1 - line[0] * t[i % 4] - line[1] * t[(i+1) % 4]) * s);
+                        ctx.lineTo((ox + x + 1 - line[2] * t[(i+1) % 4] + line[3] * t[i % 4]) * s, (oy + y + 1 - line[2] * t[i % 4] - line[3] * t[(i+1) % 4]) * s);
+                        break;
+                    case 0b1001:
+                    case 0b1011:
+                        line = [0.2, 0.5, 0.2, 0.0];
+                        ctx.moveTo((ox + x + 1 - line[0] * t[(i+1) % 4] + line[1] * t[i % 4]) * s, (oy + y + 1 - line[0] * t[i % 4] - line[1] * t[(i+1) % 4]) * s);
+                        ctx.lineTo((ox + x + 1 - line[2] * t[(i+1) % 4] + line[3] * t[i % 4]) * s, (oy + y + 1 - line[2] * t[i % 4] - line[3] * t[(i+1) % 4]) * s);
+                        break;
+                    case 0b1101:
+                        line = [0.2, 0.0, 0.0, 0.2];
+                        // ctx.moveTo((ox + x + 1 - line[0] * t[(i+1) % 4] + line[1] * t[i % 4]) * s, (oy + y + 1 - line[0] * t[i % 4] - line[1] * t[(i+1) % 4]) * s);
+                        // ctx.lineTo((ox + x + 1 - line[2] * t[(i+1) % 4] + line[3] * t[i % 4]) * s, (oy + y + 1 - line[2] * t[i % 4] - line[3] * t[(i+1) % 4]) * s);
+                        ctx.arc((ox + x + 1) * s, (oy + y + 1) * s, 0.2 * s, (i + 2) * 0.5 * Math.PI, (i + 3) * 0.5 * Math.PI);
+                        break;
+                }
+                ctx.stroke();
+            }
         }
     }
     for (const item of field.items) {
