@@ -34,6 +34,7 @@ export function main(ctx: CanvasRenderingContext2D) {
         {
             const i = field.items.findIndex(item => item.x === player.cx && item.y === player.cy);
             if (~i) {
+                player.onaka += 100;
                 field.items.splice(i, 1);
             }
         }
@@ -80,6 +81,7 @@ export function main(ctx: CanvasRenderingContext2D) {
         drawText('z', 5, !!keys.KeyZ);
         drawText(`fps: ${(fpsManager.fps() + '00000').substr(0, 6)}`, 7, false);
         drawText(`${player.cx}, ${player.cy}`, 8, false);
+        drawText(`onaka: ${player.onaka}`, 10, false);
 
         fpsManager.requestAnimationFrame(loop);
     }

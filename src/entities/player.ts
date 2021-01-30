@@ -17,6 +17,8 @@ function dir2dpos(dir: Dir): [number, number] {
 }
 
 export class Player {
+    onaka: number;
+    onakaMax: number;
     cx: number;
     cy: number;
     dir: Dir;
@@ -26,6 +28,8 @@ export class Player {
     moveCoolTime: number;
 
     constructor(field: Field) {
+        this.onaka = 1000;
+        this.onakaMax = 1000;
         this.cx = 0;
         this.cy = 0;
         this.dir = 'down';
@@ -39,6 +43,7 @@ export class Player {
         const [dx, dy] = dir2dpos(this.dir);
         if (dig && this.blocked(this.cx + dx, this.cy + dy)) {
             this.field.dig(this.cx + dx, this.cy + dy);
+            this.onaka -= 10;
         }
         if (!this.blocked(this.cx + dx, this.cy + dy)) {
             if (fast && !this.blocked(this.cx + dx * 2, this.cy + dy * 2) &&
@@ -50,6 +55,7 @@ export class Player {
             this.cy += dy;
             this.moveCounterMax = fast ? 1 : 3;
             this.moveCounter = this.moveCounterMax;
+            this.onaka -= 1;
         }
     }
 
