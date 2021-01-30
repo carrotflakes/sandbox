@@ -73,10 +73,11 @@ function arrangeItems(seed: number, chunk: Chunk, offsetX: number, offsetY: numb
         });
     }
     for (let i = 0; i < 10; ++i) {
+        const pos = position();
         items.push({
             type: 'board',
-            content: ['こんにちは！', 'やっほー', 'ここまできたよ'],
-            ...position(),
+            content: ['やっほー', `ここは ${pos.x}, ${pos.y} です`, 'ここまできたよ'],
+            ...pos,
         });
     }
     // console.log(items);

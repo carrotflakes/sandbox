@@ -111,6 +111,9 @@ export function main(ctx: CanvasRenderingContext2D) {
 
         tapIndicator.draw(ctx);
 
+        ctx.fillStyle = '#eee';
+        ctx.fillRect(600, 0, 200, 600);
+
         const keys = getKeys();
         drawText([
             'key:',
@@ -123,8 +126,10 @@ export function main(ctx: CanvasRenderingContext2D) {
             keys.KeyM && 'm',
         ].filter(x => x).join(' '), 0, false);
         drawText(`fps: ${(fpsManager.fps() + '00000').substr(0, 6)}`, 1, false);
-        drawText(`${player.cx}, ${player.cy}`, 8, false);
+        drawText(`pos: ${player.cx}, ${player.cy}`, 8, false);
         drawText(`onaka: ${player.onaka}`, 10, false);
+        drawText(`chunks: ${field.chunks.chunks.size}`, 15, false);
+        drawText(`items: ${field.items.length}`, 16, false);
 
         fpsManager.requestAnimationFrame(loop);
     }
