@@ -7,6 +7,7 @@ import { Navigator } from './entities/navigator';
 import { TapIndicator } from './entities/tapIndicator';
 import { setBoard, close as closeBoard } from './board';
 import { Minimap } from './entities/minimap';
+import { Particles } from './entities/particles';
 
 export function main(ctx: CanvasRenderingContext2D) {
     const fpsManager = new FpsManager(30);
@@ -15,9 +16,11 @@ export function main(ctx: CanvasRenderingContext2D) {
     const navigator = new Navigator(field, player);
     const tapIndicator = new TapIndicator();
     const minimap = new Minimap(field, player);
+    const particles = new Particles(player);
     const [fpx, fpy] = firstPos(field);
     player.cx = fpx;
     player.cy = fpy;
+    player.onDig((x, y) => particles.put(x, y));
     let mouse: {x: number, y: number, timestamp: number} | null = null;
     let itemOn: Item | null = null;
     let boardShowing = false;
@@ -57,6 +60,7 @@ export function main(ctx: CanvasRenderingContext2D) {
         player.update();
         navigator.update();
         minimap.update();
+        particles.update();
 
         {
             const i = field.items.findIndex(item => item.x === player.cx && item.y === player.cy);
@@ -103,6 +107,7 @@ export function main(ctx: CanvasRenderingContext2D) {
         ctx.closePath();
         ctx.clip();
         drawField3(ctx, field, [7-rp[0], 7-rp[1]]);
+        particles.draw(ctx, [7-rp[0], 7-rp[1]]);
         navigator.draw(ctx, [7-rp[0], 7-rp[1]]);
         ctx.restore();
 

@@ -26,6 +26,7 @@ export class Player {
     moveCounterMax: number;
     field: Field;
     moveCoolTime: number;
+    _onDig: ((x: number, y: number) => void) | null;
 
     constructor(field: Field) {
         this.onaka = 1000;
@@ -37,6 +38,7 @@ export class Player {
         this.moveCounterMax = 3;
         this.field = field;
         this.moveCoolTime = 0;
+        this._onDig = null;
     }
 
     move(fast: boolean, dig: boolean) {
@@ -44,6 +46,7 @@ export class Player {
         if (dig && this.blocked(this.cx + dx, this.cy + dy)) {
             this.field.dig(this.cx + dx, this.cy + dy);
             this.onaka -= 10;
+            if (this._onDig) this._onDig(this.cx + dx, this.cy + dy);
         }
         if (!this.blocked(this.cx + dx, this.cy + dy)) {
             if (fast && !this.blocked(this.cx + dx * 2, this.cy + dy * 2) &&
@@ -67,22 +70,6 @@ export class Player {
                 return;
             }
             const fast = !!keys.ShiftLeft;
-            const ok = (dx: number, dy: number) => {
-                if (!this.blocked(this.cx + dx, this.cy + dy)) {
-                    if (fast && !this.blocked(this.cx + dx * 2, this.cy + dy * 2) &&
-                        (this.blocked(this.cx + dy, this.cy + dx) && !this.blocked(this.cx + dx + dy, this.cy + dy + dx)) ||
-                        (this.blocked(this.cx - dy, this.cy - dx) && !this.blocked(this.cx + dx - dy, this.cy + dy - dx))) {
-                            this.moveCoolTime = 5;
-                    }
-                    this.cx += dx;
-                    this.cy += dy;
-                    this.moveCounter = this.moveCounterMax;
-                } else {
-                    if (keys.KeyZ) {
-                        this.field.dig(this.cx + dx, this.cy + dy);
-                    }
-                }
-            };
             if (keys.ArrowUp) {
                 this.dir = 'up';
                 this.move(fast, !!keys.KeyZ);
@@ -127,5 +114,9 @@ export class Player {
         ctx.lineCap = 'round';
         ctx.lineWidth = 0.2;
         ctx.stroke();
+    }
+
+    onDig(_onDig: (x: number, y: number) => void) {
+        this._onDig = _onDig;
     }
 }
