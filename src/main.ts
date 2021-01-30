@@ -1,10 +1,11 @@
 import {size, Chunks, Chunk} from './core';
 import {getKeys} from './keyboard';
 import { FpsManager } from './fpsManager';
-import { Field } from './field';
+import { Field, Item } from './field';
 import { Player } from './entities/player';
 import { Navigator } from './entities/navigator';
 import { TapIndicator } from './entities/tapIndicator';
+import { setBoard } from './board';
 
 export function main(ctx: CanvasRenderingContext2D) {
     const fpsManager = new FpsManager(30);
@@ -16,8 +17,14 @@ export function main(ctx: CanvasRenderingContext2D) {
     player.cx = fpx;
     player.cy = fpy;
     let mouse: {x: number, y: number, timestamp: number} | null = null;
+    let itemOn: Item | null = null;
+    let boardShowing = false;
 
     function loop() {
+        if (boardShowing) {
+            setTimeout(loop, 100);
+            return;
+        }
         if (mouse) {
             tapIndicator.taped(mouse);
 
@@ -34,15 +41,24 @@ export function main(ctx: CanvasRenderingContext2D) {
         {
             const i = field.items.findIndex(item => item.x === player.cx && item.y === player.cy);
             if (~i) {
-                const item = field.items[i];
-                switch (item.type) {
-                    case 'food':
-                        player.onaka += 100;
-                        field.items.splice(i, 1);
-                        break;
-                    case 'board':
-                        break;
+                if (!itemOn) {
+                    const item = field.items[i];
+                    switch (item.type) {
+                        case 'food':
+                            player.onaka += 100;
+                            field.items.splice(i, 1);
+                            break;
+                        case 'board':
+                            setBoard(item.content, () => {
+                                boardShowing = false;
+                            });
+                            boardShowing = true;
+                            itemOn = item;
+                            break;
+                    }
                 }
+            } else {
+                itemOn = null;
             }
         }
 

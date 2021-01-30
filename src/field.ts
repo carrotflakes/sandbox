@@ -10,6 +10,7 @@ export type Item = {
     } |
     {
         type: 'board',
+        content: string[],
     }
 );
 
@@ -74,6 +75,7 @@ function arrangeItems(seed: number, chunk: Chunk, offsetX: number, offsetY: numb
     for (let i = 0; i < 10; ++i) {
         items.push({
             type: 'board',
+            content: ['こんにちは！', 'やっほー', 'ここまできたよ'],
             ...position(),
         });
     }
