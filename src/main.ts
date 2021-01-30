@@ -96,13 +96,16 @@ export function main(ctx: CanvasRenderingContext2D) {
         tapIndicator.draw(ctx);
 
         const keys = getKeys();
-        drawText('↑', 0, !!keys.ArrowUp);
-        drawText('↓', 1, !!keys.ArrowDown);
-        drawText('←', 2, !!keys.ArrowLeft);
-        drawText('→', 3, !!keys.ArrowRight);
-        drawText('Shift', 4, !!keys.ShiftLeft);
-        drawText('z', 5, !!keys.KeyZ);
-        drawText(`fps: ${(fpsManager.fps() + '00000').substr(0, 6)}`, 7, false);
+        drawText([
+            keys.ArrowUp && '↑',
+            keys.ArrowDown && '↓',
+            keys.ArrowLeft && '←',
+            keys.ArrowRight && '→',
+            keys.ShiftLeft && 'Shift',
+            keys.KeyZ && 'z',
+            keys.KeyM && 'm',
+        ].filter(x => x).join(' '), 0, false);
+        drawText(`fps: ${(fpsManager.fps() + '00000').substr(0, 6)}`, 1, false);
         drawText(`${player.cx}, ${player.cy}`, 8, false);
         drawText(`onaka: ${player.onaka}`, 10, false);
 

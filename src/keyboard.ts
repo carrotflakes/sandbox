@@ -1,7 +1,7 @@
 const keyPressed: {[key:string]: number} = {
 };
 
-const Codes = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyX', 'KeyZ', 'ShiftLeft'];
+const Codes = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'KeyX', 'KeyZ', 'KeyM', 'ShiftLeft'];
 
 window.addEventListener('keydown', (e) => {
     if (Codes.includes(e.code)) {
