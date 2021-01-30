@@ -13,9 +13,20 @@
         .container {
             display: grid;
             place-items: center;
+            position: relative;
         }
         #canvas {
             background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        }
+        #board {
+            display: none;
+            position: absolute;
+            background: #fff;
+            width: 400px;
+            height: 500px;
+            border-radius: 10px;
+            border: solid 3px #333;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
         }
     </style>
@@ -23,6 +34,7 @@
 <body>
     <div class="container">
         <canvas id="canvas" width="800" height="600"></canvas>
+        <div id="board"></div>
     </div>
 </body>
 </html>

@@ -34,8 +34,15 @@ export function main(ctx: CanvasRenderingContext2D) {
         {
             const i = field.items.findIndex(item => item.x === player.cx && item.y === player.cy);
             if (~i) {
-                player.onaka += 100;
-                field.items.splice(i, 1);
+                const item = field.items[i];
+                switch (item.type) {
+                    case 'food':
+                        player.onaka += 100;
+                        field.items.splice(i, 1);
+                        break;
+                    case 'board':
+                        break;
+                }
             }
         }
 
@@ -229,7 +236,14 @@ function drawField3(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [numb
     }
     for (const item of field.items) {
         ctx.save();
-        ctx.fillStyle = 'rgba(200, 180, 20, 1)';
+        switch (item.type) {
+            case 'food':
+                ctx.fillStyle = 'rgba(200, 180, 20, 1)';
+                break;
+            case 'board':
+                ctx.fillStyle = 'rgba(100, 200, 20, 1)';
+                break;
+        }
         ctx.strokeStyle = '#ddd';
         ctx.scale(s, s);
         ctx.translate(cx + item.x, cy + item.y);

@@ -1,10 +1,17 @@
 import MersenneTwister from 'mersenne-twister';
 import {size, Chunks, Chunk} from './core';
 
-type Item = {
+export type Item = {
     x: number,
     y: number
-};
+} & (
+    {
+        type: 'food',
+    } |
+    {
+        type: 'board',
+    }
+);
 
 export class Field {
     chunks: Chunks;
@@ -48,13 +55,26 @@ export class Field {
 function arrangeItems(seed: number, chunk: Chunk, offsetX: number, offsetY: number): Item[] {
     const mt = new MersenneTwister(seed);
     const items: Item[] = [];
-    for (let i = 0; i < 10; ++i) {
+    const position = () => {
         const room = chunk.rooms[mt.random_int() % chunk.rooms.length];
-        const rx = mt.random_int() % room.w;
-        const ry = mt.random_int() % room.h;
+        let x = room.x + (mt.random_int() % room.w) + offsetX;
+        let y = room.y + (mt.random_int() % room.h) + offsetY;
+        while (items.find(item => item.x === x && item.y === y)) {
+            x = room.x + (mt.random_int() % room.w) + offsetX;
+            y = room.y + (mt.random_int() % room.h) + offsetY;
+        }
+        return {x, y};
+    }
+    for (let i = 0; i < 10; ++i) {
         items.push({
-            x: room.x + rx + offsetX,
-            y: room.y + ry + offsetY,
+            type: 'food',
+            ...position(),
+        });
+    }
+    for (let i = 0; i < 10; ++i) {
+        items.push({
+            type: 'board',
+            ...position(),
         });
     }
     // console.log(items);
