@@ -6,6 +6,7 @@ import { Player } from './entities/player';
 import { Navigator } from './entities/navigator';
 import { TapIndicator } from './entities/tapIndicator';
 import { setBoard } from './board';
+import { Minimap } from './entities/minimap';
 
 export function main(ctx: CanvasRenderingContext2D) {
     const fpsManager = new FpsManager(30);
@@ -13,12 +14,14 @@ export function main(ctx: CanvasRenderingContext2D) {
     const player = new Player(field);
     const navigator = new Navigator(field, player);
     const tapIndicator = new TapIndicator();
+    const minimap = new Minimap(field, player);
     const [fpx, fpy] = firstPos(field);
     player.cx = fpx;
     player.cy = fpy;
     let mouse: {x: number, y: number, timestamp: number} | null = null;
     let itemOn: Item | null = null;
     let boardShowing = false;
+    let pressingKeyM = false;
 
     function loop() {
         if (boardShowing) {
@@ -35,9 +38,20 @@ export function main(ctx: CanvasRenderingContext2D) {
             mouse = null;
         }
 
+        if (getKeys().KeyM) {
+            if (!pressingKeyM) {
+                pressingKeyM = true;
+                minimap.setShow(!minimap.getShow());
+            }
+        } else {
+            pressingKeyM = false;
+        }
+
         fpsManager.update();
         player.update();
         navigator.update();
+        minimap.update();
+
         {
             const i = field.items.findIndex(item => item.x === player.cx && item.y === player.cy);
             if (~i) {
@@ -93,10 +107,13 @@ export function main(ctx: CanvasRenderingContext2D) {
         player.draw(ctx);
         ctx.restore();
 
+        minimap.draw(ctx);
+
         tapIndicator.draw(ctx);
 
         const keys = getKeys();
         drawText([
+            'key:',
             keys.ArrowUp && '↑',
             keys.ArrowDown && '↓',
             keys.ArrowLeft && '←',
