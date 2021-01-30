@@ -8,8 +8,9 @@ export class FpsManager {
     }
 
     update() {
-        this.history.push(Date.now());
-        if (this.history.length > 30) {
+        const now = Date.now();
+        this.history.push(now);
+        while (this.history[0] < now - 1000) {
             this.history.shift();
         }
     }
