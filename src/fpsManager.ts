@@ -20,13 +20,15 @@ export class FpsManager {
 
     wait() {
         const len = this.history.length;
-        return 1000 * len / this.idealFps - (this.history[len - 1] - this.history[0])
+        const next = this.history[0] + 1000 * len / this.idealFps;
+        return next - Date.now();
+
     }
 
     requestAnimationFrame(f: () => void) {
         const wait = this.wait();
         if (0 < wait) {
-            setTimeout(() => requestAnimationFrame(f), wait);
+            requestAnimationFrame(() => this.requestAnimationFrame(f));
         } else {
             requestAnimationFrame(f);
         }
