@@ -5,7 +5,7 @@ import { Field, Item } from './field';
 import { Player } from './entities/player';
 import { Navigator } from './entities/navigator';
 import { TapIndicator } from './entities/tapIndicator';
-import { setBoard } from './board';
+import { setBoard, close as closeBoard } from './board';
 import { Minimap } from './entities/minimap';
 
 export function main(ctx: CanvasRenderingContext2D) {
@@ -25,8 +25,14 @@ export function main(ctx: CanvasRenderingContext2D) {
 
     function loop() {
         if (boardShowing) {
-            setTimeout(loop, 100);
-            return;
+            if (mouse) {
+                boardShowing = false;
+                closeBoard();
+                mouse = null;
+            } else {
+                setTimeout(loop, 100);
+                return;
+            }
         }
         if (mouse) {
             tapIndicator.taped(mouse);
@@ -138,7 +144,6 @@ export function main(ctx: CanvasRenderingContext2D) {
     ctx.canvas.addEventListener('mousedown', (e) => {
         const bb = ctx.canvas.getBoundingClientRect();
         mouse = {x: e.clientX - bb.left, y: e.clientY - bb.top, timestamp: Date.now()};
-        navigator.setDestination([0, 0]);
     });
 }
 

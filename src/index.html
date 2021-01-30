@@ -4,6 +4,9 @@
     <meta charset="UTF-8"/>
     <title>sandbox</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         html, body, .container {
             margin: 0;
             padding: 0;
@@ -14,19 +17,24 @@
         .container {
             display: grid;
             place-items: center;
-            position: relative;
         }
-        #canvas {
+        .playarea {
+            position: relative;
+            width: 800px;
+            height: 600px;
             background: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+            user-select: none;
+        }
+        #boardContainer {
+            position: absolute;
+            top: 50px;
+            left: 200px;
+            width: 400px;
         }
         #board {
-            position: absolute;
-            /* width: 400px;
-            height: 500px; */
-        }
-        #board > div {
-            display: none;
+            display: flex;
+            flex-direction: column;
             background: #fff;
             width: 400px;
             height: 500px;
@@ -35,18 +43,44 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
             overflow-y: auto;
         }
-        #board > div > div {
-            margin: 5px;
+        .posts {
+            flex: 1 0 auto;
         }
-        #board > div > div:nth-child(n+2) {
+        .posts > div {
+            margin: 5px;
+            user-select: text;
+        }
+        .posts > div:nth-child(n+2) {
             border-top: dashed 3px #333;
+        }
+        #inputBox {
+            flex: 0 0 auto;
+            appearance: none;
+            margin: 5px;
+            width: 380px;
+            font-size: 1.4em;
+        }
+        .board-header {
+            height: 30px;
+            padding: 3px;
+            flex: 0 0 auto;
+        }
+        .close-button {
+            cursor: pointer;
+            padding: 2px;
+            float: right;
+        }
+        .close-button:hover {
+            background-color: #eee;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <canvas id="canvas" width="800" height="600"></canvas>
-        <div id="board"></div>
+        <div class="playarea">
+            <canvas id="canvas" width="800" height="600"></canvas>
+            <div id="boardContainer"></div>
+        </div>
     </div>
 </body>
 </html>

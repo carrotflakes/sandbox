@@ -11,16 +11,28 @@ export function setBoard(content: string[], onClose: () => void) {
     _onClose = onClose;
 }
 
+export function close() {
+    _setShow && _setShow(false);
+}
+
 const Board = () => {
     const [show, setShow] = React.useState(false);
     const [content, setContent] = React.useState(['']);
     _setShow = setShow;
     _setContent = setContent;
-    return (<div style={{display: show ? 'inline-block' : 'none'}} onClick={() => (setShow(false), _onClose())}>
-        {content.map((c, i) => (<div key={i}>{c}</div>))}
+    return (
+    <div id="board" style={{display: show ? undefined : 'none'}}>
+        <div className="board-header">
+            <span>Board</span>
+            <div className="close-button" onClick={() => (setShow(false), _onClose())}>close</div>
+        </div>
+        <div className="posts">
+            {content.map((c, i) => (<div key={i}>{c}</div>))}
+        </div>
+        <input type="text" id="inputBox"/>
     </div>);
 };
 
 ReactDOM.render(
   <Board/>,
-  document.getElementById('board'));
+  document.getElementById('boardContainer'));
