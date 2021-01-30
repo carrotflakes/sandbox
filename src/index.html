@@ -41,10 +41,18 @@
             border-radius: 10px;
             border: solid 3px #333;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
-            overflow-y: auto;
+        }
+        .posts-container {
+            flex: 1 0 auto;
+            position: relative;
         }
         .posts {
-            flex: 1 0 auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            overflow-y: auto;
         }
         .posts > div {
             margin: 5px;
@@ -59,6 +67,7 @@
             margin: 5px;
             width: 380px;
             font-size: 1.4em;
+            border: solid 2px #333;
         }
         .board-header {
             height: 30px;

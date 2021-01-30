@@ -18,18 +18,32 @@ export function close() {
 const Board = () => {
     const [show, setShow] = React.useState(false);
     const [content, setContent] = React.useState(['']);
+    const [text, setText] = React.useState('');
     _setShow = setShow;
     _setContent = setContent;
+    const post = () => {
+        if (text.trim()) {
+            console.log('post: ' + text);
+            setContent([...content, text]);
+            setText('');
+        }
+    };
     return (
     <div id="board" style={{display: show ? undefined : 'none'}}>
         <div className="board-header">
             <span>Board</span>
             <div className="close-button" onClick={() => (setShow(false), _onClose())}>close</div>
         </div>
-        <div className="posts">
-            {content.map((c, i) => (<div key={i}>{c}</div>))}
+        <div className="posts-container">
+            <div className="posts">
+                {content.map((c, i) => (<div key={i}>{c}</div>))}
+            </div>
         </div>
-        <input type="text" id="inputBox"/>
+        <input type="text" id="inputBox"
+            onKeyPress={e => e.key === 'Enter' && post()}
+            value={text}
+            onChange={e => setText(e.target.value)}
+            maxLength={100}/>
     </div>);
 };
 
