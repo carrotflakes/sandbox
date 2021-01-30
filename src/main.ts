@@ -211,8 +211,8 @@ function drawField3(ctx: CanvasRenderingContext2D, field: Field, [cx, cy]: [numb
     const f = (x: number , y: number) => field.getCell(x + dx, y + dy) < 1;
     ctx.strokeStyle = '#333';
     ctx.lineWidth = 3;
-    for (let y = 0; y < cells + 1; ++y) {
-        for (let x = 0; x < cells + 1; ++x) {
+    for (let y = -1; y < cells + 1; ++y) {
+        for (let x = -1; x < cells + 1; ++x) {
             const d = (+f(x, y) << 3) | (+f(x+1, y) << 2) | (+f(x+1, y+1) << 1) | (+f(x, y+1) << 0);
             for (let i = 0; i < 4; ++i) {
                 let line: [number, number, number, number] | null = null;
